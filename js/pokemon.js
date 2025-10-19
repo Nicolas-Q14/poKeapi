@@ -1,52 +1,35 @@
-var esFavorito = false;
+var esfavorito = false;
 
-// Función para agregar o quitar un Pokémon de favoritos
-function toggleFavorito(paramid, paramname) {
-
-    // Leer favoritos actuales desde localStorage
+function togglefavorito(paramid, paramname) {
     let favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
-    let existe = false;
-
-    // Verificar si ya está guardado
-    for (let i = 0; i < favoritos.length; i++) {
-        if (favoritos[i].name === paramname) {
-            existe = true;
-            break;
-        }
-    }
+    let existe = favoritos.some(poke => poke.name === paramname);
 
     if (existe) {
-        // Si ya existe, lo eliminamos
         favoritos = favoritos.filter(poke => poke.name !== paramname);
-        esFavorito = false;
+        esfavorito = false;
     } else {
-        // Si no está, lo agregamos
         favoritos.push({
             name: paramname,
             url: `https://pokeapi.co/api/v2/pokemon/${paramid}/`
         });
-        esFavorito = true;
+        esfavorito = true;
     }
 
-    // Guardar el array actualizado en localStorage
     localStorage.setItem("favoritos", JSON.stringify(favoritos));
 
-    // Actualizar el icono en pantalla (si existe el botón)
     const boton = document.querySelector(`#corazon-${paramid}`);
-    if (boton) boton.textContent = esFavorito ? "❤" : "🤍";
+    if (boton) boton.textContent = esfavorito ? "❤️" : "🤍";
 }
 
-// Función para mostrar el detalle del Pokémon
-async function Detalle(id) {
-        
+async function detalle(id) {
     const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
     const data = await res.json();
 
     const tipos = data.types.map(t => t.type.name).join(", ");
 
-    // Verificamos si ya está en favoritos para mostrar el corazón correcto
-    let favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
-    const esFavoritoActual = favoritos.some(poke => poke.name === data.name);
+    // Revisar si ya es favorito
+    const favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
+    const esfav = favoritos.some(poke => poke.name === data.name);
 
     const detalle = `
         <section class="c-detalle">
@@ -61,8 +44,8 @@ async function Detalle(id) {
             <p><b>HP:</b> ${data.stats[0].base_stat}</p>
             <p><b>Velocidad:</b> ${data.stats[5].base_stat}</p>
             <p><b>Habilidad principal:</b> ${data.abilities[0].ability.name}</p>
-            <button onclick="toggleFavorito(${data.id}, '${data.name}')">
-                <span id="corazon-${data.id}">${esFavoritoActual ? '❤' : '🤍'}</span> Favorito
+            <button onclick="togglefavorito(${data.id}, '${data.name}')">
+                <span id="corazon-${data.id}">${esfav ? '❤️' : '🤍'}</span> Favorito
             </button>
         </section>
     `;
