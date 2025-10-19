@@ -1,93 +1,71 @@
-function GenerarLista(lista) {
-    var listapokes = "";
-    for (var i = 0; i < lista.length; i++) {
-        let nombre = lista[i].name;
+// --- home.js ---
+function generarlista(lista) {
+  let listapokes = "";
+  for (let i = 0; i < lista.length; i++) {
+    const url = lista[i].url;
+    const parts = url.split("/").filter(Boolean);
+    const id = parts[parts.length - 1];
+    const nombre = lista[i].name;
 
-        // Extraer ID del URL
-        let url = lista[i].url;
-        let id = url.split("/")[url.split("/").length - 2];
-
-        listapokes += `
-            <div class="un-pokemon" onclick="Detalle(${id})">
-                <p>#${id} ${nombre}</p>
-                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png">
-            </div>
-        `;
-    }
-    return listapokes;
-}
-
-function buscadorfuncion(asa) {
-    if (asa.length >= 3) {
-        const filtrados = pokemones.filter(p => p.name.toLowerCase().includes(asa.toLowerCase()));
-        document.getElementById("la-lista").innerHTML = GenerarLista(filtrados);
-    } else {
-        document.getElementById("la-lista").innerHTML = GenerarLista(pokemones);
-    }
-}
-
-function Home() {
-    const root = document.getElementById("root");
-    root.innerHTML = ""; // ← Limpiamos el contenido anterior
-
-    // Buscador
-    const buscador = document.createElement("input");
-    buscador.classList.add("c-buscador");
-    buscador.type = "text";
-    buscador.placeholder = "Buscar Pokémon...";
-    buscador.addEventListener("input", () => {
-        buscadorfuncion(buscador.value);
-    });
-
-    // Filtros
-    const tipos = [
-        "normal", "fighting", "flying", "poison", "ground", "rock", "bug",
-        "ghost", "steel", "fire", "water", "grass", "electric", "psychic", "ice",
-        "dragon", "dark", "fairy", "stellar", "unknown"
-    ];
-    const filtro = document.createElement("div");
-
-    for (let i = 0; i < tipos.length; i++) {
-        const btn = document.createElement("button");
-        btn.textContent = tipos[i];
-        btn.addEventListener("click", () => {
-            FiltroConexion(tipos[i]);
-        });
-        filtro.appendChild(btn);
-    }
-
-    // Lista
-    const contenedorLista = document.createElement("div");
-    contenedorLista.classList.add("c-lista");
-    contenedorLista.id = "la-lista";
-
-    // Agregar todo al root
-    root.appendChild(filtro);
-    root.appendChild(buscador);
-    root.appendChild(contenedorLista);
-
-    // Mostrar todos los pokes de inicio
-    document.getElementById("la-lista").innerHTML = GenerarLista(pokemones);
-}
-
-// 🔹 Nueva función Detalle con botón VOLVER
-async function Detalle(id) {
-    const root = document.getElementById("root");
-    root.innerHTML = "<p>Cargando...</p>";
-
-    const respuesta = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
-    const data = await respuesta.json();
-
-    root.innerHTML = `
-        <div class="detalle">
-            <h2>#${data.id} ${data.name.toUpperCase()}</h2>
-            <img src="${data.sprites.front_default}" alt="${data.name}">
-            <p><strong>Altura:</strong> ${data.height}</p>
-            <p><strong>Peso:</strong> ${data.weight}</p>
-            <p><strong>Tipos:</strong> ${data.types.map(t => t.type.name).join(", ")}</p>
-
-            <button onclick="Home()" class="btn-volver">Volver</button>
-        </div>
+    listapokes += `
+      <div class="c-lista-pokemon poke-${id}" onclick="detalle('${id}')">
+        <p>#${id}</p>
+        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png"
+             height="60" loading="lazy" alt="${nombre}">
+        <p>${nombre}</p>
+      </div>
     `;
+  }
+  return listapokes;
 }
 
+function buscadorfuncion(texto) {
+  if (texto.length >= 3) {
+    const filtrados = pokemones.filter(p =>
+      p.name.toLowerCase().includes(texto.toLowerCase())
+    );
+    document.getElementById("la-lista").innerHTML = generarlista(filtrados);
+  } else {
+    document.getElementById("la-lista").innerHTML = generarlista(pokemones);
+  }
+}
+
+async function filtroconexion(filtroelegido) {
+  const pokesfiltrados = await conexionlista(filtroelegido);
+  document.getElementById("la-lista").innerHTML = generarlista(pokesfiltrados);
+}
+
+function home() {
+  const buscador = document.createElement("input");
+  buscador.classList.add("c-buscador");
+  buscador.type = "text";
+  buscador.placeholder = "Buscar Pokémon...";
+  buscador.addEventListener("input", () => buscadorfuncion(buscador.value));
+
+  const tipos = [
+    "all", "normal", "fighting", "flying", "poison", "ground", "rock", "bug",
+    "ghost", "steel", "fire", "water", "grass", "electric", "psychic", "ice",
+    "dragon", "dark", "fairy"
+  ];
+
+  const filtro = document.createElement("div");
+  filtro.classList.add("c-filtro");
+
+  tipos.forEach(tipo => {
+    const btn = document.createElement("button");
+    btn.textContent = tipo;
+    btn.addEventListener("click", () => filtroconexion(tipo));
+    filtro.appendChild(btn);
+  });
+
+  const contenedorlista = document.createElement("div");
+  contenedorlista.classList.add("c-lista");
+  contenedorlista.id = "la-lista";
+  contenedorlista.innerHTML = generarlista(pokemones);
+
+  const root = document.getElementById("root");
+  root.innerHTML = "";
+  root.appendChild(buscador);
+  root.appendChild(filtro);
+  root.appendChild(contenedorlista);
+}
