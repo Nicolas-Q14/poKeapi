@@ -1,4 +1,145 @@
-body{
-    background: rgb(117, 231, 172)
-    
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  background: linear-gradient(180deg, #f7f8fc 0%, #e3f0ff 100%);
+  color: #222;
+  padding-bottom: 80px;
+  overflow-x: hidden;
+}
+
+button {
+  background: #ffcb05;
+  border: none;
+  color: #222;
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 8px 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background: #ffde59;
+  transform: scale(1.05);
+}
+
+.c-lista,
+.c-contenedor-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+  padding: 15px;
+}
+
+.c-lista-pokemon {
+  background: #ffffff;
+  border-radius: 15px;
+  width: calc(50% - 10px);
+  text-align: center;
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.c-lista-pokemon:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+.c-lista-pokemon p {
+  margin-top: 5px;
+  text-transform: capitalize;
+  font-weight: 600;
+}
+
+.c-unpoke {
+  background: #222;
+  color: #fff;
+  width: calc(25% - 10px);
+  height: 90px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.c-unpoke:hover {
+  background: #333;
+}
+
+.c-mios-pokemon {
+  background: #f7f9ff;
+  color: #111;
+  border: 2px solid #ffcb05;
+}
+
+.c-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #1f1f2e;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 12px 0;
+  box-shadow: 0 -3px 15px rgba(0, 0, 0, 0.25);
+  border-top: 3px solid #ffcb05;
+  z-index: 1000;
+}
+
+.c-nav-item {
+  flex: 1;
+  text-align: center;
+  color: #fff;
+  font-weight: 500;
+  padding: 8px 0;
+  transition: all 0.3s ease;
+}
+
+.c-nav-item:hover {
+  color: #ffcb05;
+  transform: translateY(-3px);
+}
+
+.c-nav-item:active {
+  transform: scale(0.95);
+}
+
+@media (max-width: 800px) {
+  .c-lista-pokemon {
+    width: calc(50% - 10px);
+  }
+
+  .c-unpoke {
+    width: calc(33.3% - 10px);
+  }
+}
+
+@media (max-width: 600px) {
+  .c-lista-pokemon {
+    width: calc(50% - 10px);
+  }
+
+  .c-unpoke {
+    width: calc(50% - 10px);
+  }
+
+  .c-nav {
+    flex-wrap: nowrap;
+    padding: 10px 0;
+  }
+
+  .c-nav-item {
+    font-size: 14px;
+    padding: 6px 0;
+  }
 }
