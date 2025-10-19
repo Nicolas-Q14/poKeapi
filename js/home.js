@@ -1,17 +1,16 @@
 function GenerarLista(lista) {
-    let listapokes = "";
-    for (let i = 0; i < lista.length; i++) {
-        let url = lista[i].url;
-        let parts = url.split("/").filter(Boolean); // elimina vacíos
-        let id = parts[parts.length - 1]; // último elemento = id
+    var listapokes = "";
+    for (var i = 0; i < lista.length; i++) {
         let nombre = lista[i].name;
 
+        // Extraer ID del URL
+        let url = lista[i].url;
+        let id = url.split("/")[url.split("/").length - 2]; // el penúltimo elemento es el ID
+
         listapokes += `
-            <div class="c-lista-pokemon poke-${id}" onclick="Detalle('${id}')">
-                <p>#${id}</p>
-                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png"
-                     width="auto" height="60" loading="lazy" alt="${nombre}">
-                <p>${nombre}</p>
+            <div class="un-pokemon" onclick="Detalle(${id})">
+                <p>#${id} ${nombre}</p>
+                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png">
             </div>
         `;
     }
@@ -20,22 +19,23 @@ function GenerarLista(lista) {
 
 function buscadorfuncion(asa) {
     if (asa.length >= 3) {
-        const filtrados = pokemones.filter(p =>
-            p.name.toLowerCase().includes(asa.toLowerCase())
-        );
-        document.getElementById("la-lista").innerHTML = GenerarLista(filtrados);
+        const filtrados = [];
+        for (let i = 0; i < pokemones.length; i++) {
+            const nombre = pokemones[i].name.toLowerCase();
+            if (nombre.includes(asa.toLowerCase())) {
+                filtrados.push(pokemones[i]);
+            }
+        }
+        let listaHTML = GenerarLista(filtrados);
+        document.getElementById("la-lista").innerHTML = listaHTML;
     } else {
-        // si se borra la búsqueda, mostrar todos
-        document.getElementById("la-lista").innerHTML = GenerarLista(pokemones);
+        let listaHTML = GenerarLista(pokemones); // ← corregido (G mayúscula)
+        document.getElementById("la-lista").innerHTML = listaHTML;
     }
 }
 
-function FiltroConexion(filtroelegido) {
-    console.log("Filtro:", filtroelegido);
-}
-
-function home() {
-    // buscador
+function Home() {
+    // Buscador
     const buscador = document.createElement("input");
     buscador.classList.add("c-buscador");
     buscador.type = "text";
@@ -44,32 +44,33 @@ function home() {
         buscadorfuncion(buscador.value);
     });
 
-    // filtro
+    // Filtros
     const tipos = [
         "normal", "fighting", "flying", "poison", "ground", "rock", "bug",
         "ghost", "steel", "fire", "water", "grass", "electric", "psychic", "ice",
         "dragon", "dark", "fairy", "stellar", "unknown"
     ];
     const filtro = document.createElement("div");
+
     for (let i = 0; i < tipos.length; i++) {
         const btn = document.createElement("button");
         btn.textContent = tipos[i];
         btn.addEventListener("click", () => {
-            FiltroConexion(tipos[i]); 
+            FiltroConexion(tipos[i]);
         });
         filtro.appendChild(btn);
     }
 
-    // lista
-    const contenedorLista = document.createElement("div");
+    // Lista
+    var contenedorLista = document.createElement("div");
     contenedorLista.classList.add("c-lista");
-    contenedorLista.id = "la-lista"; 
-    contenedorLista.innerHTML = GenerarLista(pokemones);
+    contenedorLista.id = "la-lista";
 
-    // root
-    let root = document.getElementById("root");
-    root.innerHTML = ""; 
-    root.appendChild(buscador);
-    root.appendChild(filtro);
-    root.appendChild(contenedorLista);
+    // Agregar al root
+    document.getElementById("root").appendChild(filtro);
+    document.getElementById("root").appendChild(buscador);
+    document.getElementById("root").appendChild(contenedorLista);
+
+    // Mostrar todos los pokes de inicio
+    document.getElementById("la-lista").innerHTML = GenerarLista(pokemones);
 }
