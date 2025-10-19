@@ -5,7 +5,7 @@ function GenerarLista(lista) {
 
         // Extraer ID del URL
         let url = lista[i].url;
-        let id = url.split("/")[url.split("/").length - 2]; // el penúltimo elemento es el ID
+        let id = url.split("/")[url.split("/").length - 2];
 
         listapokes += `
             <div class="un-pokemon" onclick="Detalle(${id})">
@@ -19,22 +19,17 @@ function GenerarLista(lista) {
 
 function buscadorfuncion(asa) {
     if (asa.length >= 3) {
-        const filtrados = [];
-        for (let i = 0; i < pokemones.length; i++) {
-            const nombre = pokemones[i].name.toLowerCase();
-            if (nombre.includes(asa.toLowerCase())) {
-                filtrados.push(pokemones[i]);
-            }
-        }
-        let listaHTML = GenerarLista(filtrados);
-        document.getElementById("la-lista").innerHTML = listaHTML;
+        const filtrados = pokemones.filter(p => p.name.toLowerCase().includes(asa.toLowerCase()));
+        document.getElementById("la-lista").innerHTML = GenerarLista(filtrados);
     } else {
-        let listaHTML = GenerarLista(pokemones); // ← corregido (G mayúscula)
-        document.getElementById("la-lista").innerHTML = listaHTML;
+        document.getElementById("la-lista").innerHTML = GenerarLista(pokemones);
     }
 }
 
 function Home() {
+    const root = document.getElementById("root");
+    root.innerHTML = ""; // ← Limpiamos el contenido anterior
+
     // Buscador
     const buscador = document.createElement("input");
     buscador.classList.add("c-buscador");
@@ -62,15 +57,37 @@ function Home() {
     }
 
     // Lista
-    var contenedorLista = document.createElement("div");
+    const contenedorLista = document.createElement("div");
     contenedorLista.classList.add("c-lista");
     contenedorLista.id = "la-lista";
 
-    // Agregar al root
-    document.getElementById("root").appendChild(filtro);
-    document.getElementById("root").appendChild(buscador);
-    document.getElementById("root").appendChild(contenedorLista);
+    // Agregar todo al root
+    root.appendChild(filtro);
+    root.appendChild(buscador);
+    root.appendChild(contenedorLista);
 
     // Mostrar todos los pokes de inicio
     document.getElementById("la-lista").innerHTML = GenerarLista(pokemones);
 }
+
+// 🔹 Nueva función Detalle con botón VOLVER
+async function Detalle(id) {
+    const root = document.getElementById("root");
+    root.innerHTML = "<p>Cargando...</p>";
+
+    const respuesta = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+    const data = await respuesta.json();
+
+    root.innerHTML = `
+        <div class="detalle">
+            <h2>#${data.id} ${data.name.toUpperCase()}</h2>
+            <img src="${data.sprites.front_default}" alt="${data.name}">
+            <p><strong>Altura:</strong> ${data.height}</p>
+            <p><strong>Peso:</strong> ${data.weight}</p>
+            <p><strong>Tipos:</strong> ${data.types.map(t => t.type.name).join(", ")}</p>
+
+            <button onclick="Home()" class="btn-volver">Volver</button>
+        </div>
+    `;
+}
+
